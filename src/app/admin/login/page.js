@@ -1,5 +1,5 @@
 
-import { login } from '@/lib/actions';
+import { login } from '../../../lib/actions';
 
 export default function AdminLogin() {
     return (

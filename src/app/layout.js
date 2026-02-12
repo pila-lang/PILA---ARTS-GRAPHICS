@@ -1,6 +1,6 @@
 import './globals.css';
-import Navbar from '@/components/Navbar';
-import { CartProvider } from '@/context/CartContext';
+import Navbar from '../components/Navbar';
+import { CartProvider } from '../context/CartContext';
 
 export const metadata = {
     title: 'PILA ARTS & GRAPHICS - Premium Artworks',

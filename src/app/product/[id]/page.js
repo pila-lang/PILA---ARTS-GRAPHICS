@@ -1,5 +1,5 @@
-import { getProduct } from '@/lib/data';
-import AddToCartButton from '@/components/AddToCartButton';
+import { getProduct } from '../../../lib/data';
+import AddToCartButton from '../../../components/AddToCartButton';
 import Link from 'next/link';
 
 export default async function ProductPage({ params }) {

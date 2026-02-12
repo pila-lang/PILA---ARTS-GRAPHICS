@@ -2,8 +2,8 @@
 
 import { useEffect, useState, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
-import ProductCard from '@/components/ProductCard';
-import StaticBackground from '@/components/StaticBackground';
+import ProductCard from '../../components/ProductCard';
+import StaticBackground from '../../components/StaticBackground';
 
 function GalleryContent() {
     const [products, setProducts] = useState([]);

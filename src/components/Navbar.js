@@ -1,7 +1,7 @@
 import Link from 'next/link';
 import { User, LogOut } from 'lucide-react';
 import { cookies } from 'next/headers';
-import { logout } from '@/lib/actions';
+import { logout } from '../lib/actions';
 import CartIcon from './CartIcon';
 
 export default function Navbar() {

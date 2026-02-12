@@ -1,7 +1,7 @@
 import { cookies } from 'next/headers';
 import { redirect } from 'next/navigation';
-import { getProducts, getAbout } from '@/lib/data';
-import { createProduct, logout, deleteProductAction, updateAboutAction } from '@/lib/actions';
+import { getProducts, getAbout } from '../../../lib/data';
+import { createProduct, logout, deleteProductAction, updateAboutAction } from '../../../lib/actions';
 
 export default async function AdminDashboard() {
     const session = cookies().get('pila_session');

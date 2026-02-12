@@ -1,10 +1,10 @@
-import LiveBackground from "@/components/LiveBackground";
+import StaticBackground from "../../components/StaticBackground";
 
 export default function ContactPage() {
     return (
         <div style={{ position: 'relative', minHeight: '100vh' }}>
-            {/* Stable Rain/Atmosphere video */}
-            <LiveBackground videoSrc="https://cdn.pixabay.com/video/2021/08/17/85374-589574512_large.mp4" />
+            {/* High Quality Atmospheric Background Image */}
+            <StaticBackground imageUrl="https://images.unsplash.com/photo-1423666639041-f56000c27a9a?auto=format&fit=crop&q=80&w=2000" />
 
             <div className="container" style={{ padding: '80px 20px', maxWidth: '800px', textAlign: 'center', zIndex: 10, position: 'relative' }}>
                 <h1 style={{ marginBottom: '40px', fontSize: '3.5rem', textShadow: '0 2px 10px rgba(0,0,0,0.5)' }}>Get In Touch</h1>

@@ -1,9 +1,9 @@
 "use client";
 
-import { useCart } from '@/context/CartContext';
+import { useCart } from '../../context/CartContext';
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import StaticBackground from '@/components/StaticBackground';
+import StaticBackground from '../../components/StaticBackground';
 
 export default function CartPage() {
     const { cart, removeFromCart, clearCart } = useCart();

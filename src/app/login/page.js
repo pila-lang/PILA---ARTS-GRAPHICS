@@ -1,8 +1,8 @@
 "use client";
 
-import { customerLogin } from '@/lib/actions';
+import { customerLogin } from '../../lib/actions';
 import Link from 'next/link';
-import LiveBackground from '@/components/LiveBackground';
+import LiveBackground from '../../components/LiveBackground';
 import { useSearchParams } from 'next/navigation';
 import { Suspense } from 'react';
 

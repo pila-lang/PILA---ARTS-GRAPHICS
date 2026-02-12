@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
-import ProductCard from '@/components/ProductCard';
+import ProductCard from './ProductCard';
 
 export default function HomeClient({ initialProducts }) {
     const [products, setProducts] = useState(initialProducts || []);

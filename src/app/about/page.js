@@ -1,12 +1,13 @@
-import { getAbout } from "@/lib/data";
-import StaticBackground from "@/components/StaticBackground";
+import { getAbout } from "../../lib/data";
+import StaticBackground from "../../components/StaticBackground";
 
 export default async function AboutPage() {
     const about = await getAbout();
 
     return (
         <div style={{ position: 'relative', minHeight: '100vh' }}>
-            <StaticBackground imageUrl="https://cdn.pixabay.com/video/2019/04/13/22756-329868779_large.mp4" />
+            {/* Stable Artistic Background Image */}
+            <StaticBackground imageUrl="https://images.unsplash.com/photo-1499781350541-7783f6c6a0c8?auto=format&fit=crop&q=80&w=2000" />
 
             <div className="container" style={{ padding: '80px 20px', maxWidth: '1000px', zIndex: 10, position: 'relative' }}>
                 <h1 style={{ textAlign: 'center', marginBottom: '40px', fontSize: '3.5rem', textShadow: '0 2px 10px rgba(0,0,0,0.5)' }}>About the Artist</h1>

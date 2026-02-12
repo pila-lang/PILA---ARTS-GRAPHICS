@@ -1,8 +1,8 @@
 "use client";
 
-import { customerSignup } from '@/lib/actions';
+import { customerSignup } from '../../lib/actions';
 import Link from 'next/link';
-import LiveBackground from '@/components/LiveBackground';
+import LiveBackground from '../../components/LiveBackground';
 
 export default function SignupPage() {
     return (
