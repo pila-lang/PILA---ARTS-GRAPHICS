@@ -1,0 +1,24 @@
+{
+  "users": [
+    {
+      "id": "admin-1",
+      "name": "Pila Arts Owner",
+      "email": "admin@pilaarts.com",
+      "password": "password",
+      "role": "admin"
+    },
+    {
+      "name": "Asiri",
+      "email": "pathumasiri891@gmail.com",
+      "password": "Myapple123$",
+      "role": "customer",
+      "id": "1770917635861"
+    }
+  ],
+  "products": [],
+  "orders": [],
+  "about": {
+    "bio": "asiri pathum",
+    "imageUrl": "/images/uploads/about-1770921217591-image_7.png"
+  }
+}
