@@ -20,10 +20,14 @@
   margin: 0;
 }
 
-html,
+html {
+  background-color: #050505;
+  /* Black fallback at the deepest level */
+}
+
 body {
-  background-color: #050505 !important;
-  /* Extremely dark base */
+  background-color: transparent !important;
+  /* Make body transparent so backgrounds show through */
   color: var(--foreground);
   overflow-x: hidden;
   min-height: 100vh;
