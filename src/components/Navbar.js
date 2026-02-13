@@ -19,7 +19,7 @@ export default function Navbar() {
         user = getUser(customerSession.value);
     }
 
-    const displayName = user ? user.name.split(' ')[0] : (adminSession ? 'Admin' : '');
+    const displayName = (user && user.name) ? user.name.split(' ')[0] : (adminSession ? 'Admin' : '');
     const profilePic = user ? user.profilePic : null;
 
     return (

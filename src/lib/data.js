@@ -4,21 +4,31 @@ import path from 'path';
 const dbPath = path.join(process.cwd(), 'data', 'db.json');
 
 function readDb() {
-  if (!fs.existsSync(dbPath)) {
-    return { users: [], products: [], orders: [], about: { bio: '', imageUrl: '' } };
-  }
-  const file = fs.readFileSync(dbPath, 'utf8');
   try {
-    const data = JSON.parse(file);
+    if (!fs.existsSync(dbPath)) {
+      return { users: [], products: [], orders: [], about: { bio: '', imageUrl: '' } };
+    }
+    const file = fs.readFileSync(dbPath, 'utf8');
+    const data = JSON.parse(file || '{}');
+    if (!data.users) data.users = [];
+    if (!data.products) data.products = [];
+    if (!data.orders) data.orders = [];
     if (!data.about) data.about = { bio: '', imageUrl: '' };
     return data;
   } catch (error) {
+    console.error("Database read error:", error);
     return { users: [], products: [], orders: [], about: { bio: '', imageUrl: '' } };
   }
 }
 
 function writeDb(data) {
-  fs.writeFileSync(dbPath, JSON.stringify(data, null, 2));
+  try {
+    fs.writeFileSync(dbPath, JSON.stringify(data, null, 2));
+  } catch (error) {
+    console.error("Database write error:", error);
+    // On serverless environments like Netlify, local writes will fail.
+    // We should log this so the user knows why data isn't persisting.
+  }
 }
 
 export function getUsers() {

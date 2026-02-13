@@ -5,7 +5,30 @@ import { redirect } from 'next/navigation';
 import { revalidatePath } from 'next/cache';
 import path from 'path';
 import { addUser, getUser, addProduct, getProducts, deleteProduct, updateAbout, updateUser } from './data';
-import fs from 'fs/promises';
+// import fs from 'fs/promises'; // Unused
+import { v2 as cloudinary } from 'cloudinary';
+
+cloudinary.config({
+    cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+    api_key: process.env.CLOUDINARY_API_KEY,
+    api_secret: process.env.CLOUDINARY_API_SECRET,
+});
+
+async function uploadToCloudinary(file) {
+    if (!file || typeof file === 'string' || file.size === 0) return null;
+
+    const arrayBuffer = await file.arrayBuffer();
+    const buffer = Buffer.from(arrayBuffer);
+
+    return new Promise((resolve, reject) => {
+        cloudinary.uploader.upload_stream({
+            folder: 'pila_arts_uploads',
+        }, (error, result) => {
+            if (error) reject(error);
+            else resolve(result.secure_url);
+        }).end(buffer);
+    });
+}
 
 export async function login(formData) {
     const email = formData.get('email');
@@ -61,26 +84,16 @@ export async function createProduct(formData) {
 
     if (!file || typeof file === 'string' || file.size === 0) {
         console.error('No valid file uploaded for product');
-        // Instead of throwing, we can return an error or redirect with error
         redirect('/admin/dashboard?error=NoFile');
     }
 
-    // Ensure uploads directory exists
-    const uploadsDir = path.join(process.cwd(), 'public', 'images', 'uploads');
+    let success = false;
     try {
-        await fs.mkdir(uploadsDir, { recursive: true });
-    } catch (e) { }
+        const imageUrl = await uploadToCloudinary(file);
 
-    const safeName = file.name.replace(/[^a-zA-Z0-9.-]/g, '_');
-    const fileName = `${Date.now()}-${safeName}`;
-    const filePath = path.join(uploadsDir, fileName);
-
-    try {
-        const arrayBuffer = await file.arrayBuffer();
-        const buffer = Buffer.from(arrayBuffer);
-        await fs.writeFile(filePath, buffer);
-
-        const imageUrl = `/images/uploads/${fileName}`;
+        if (!imageUrl) {
+            throw new Error('Cloudinary upload failed');
+        }
 
         addProduct({
             title,
@@ -89,15 +102,20 @@ export async function createProduct(formData) {
             imageUrl,
             category
         });
+        success = true;
     } catch (error) {
-        console.error('Error saving product file:', error);
-        redirect('/admin/dashboard?error=UploadFailed');
+        console.error('Error saving product file (Cloudinary):', error);
+        // We will redirect after the catch
     }
 
-    revalidatePath('/');
-    revalidatePath('/gallery');
-    revalidatePath('/admin/dashboard');
-    redirect('/admin/dashboard?success=true');
+    if (success) {
+        revalidatePath('/');
+        revalidatePath('/gallery');
+        revalidatePath('/admin/dashboard');
+        redirect('/admin/dashboard?success=true');
+    } else {
+        redirect('/admin/dashboard?error=UploadFailed');
+    }
 }
 
 export async function deleteProductAction(formData) {
@@ -115,18 +133,13 @@ export async function updateAboutAction(formData) {
 
     // Check if a new file was actually uploaded
     if (file && typeof file !== 'string' && file.size > 0) {
-        // Safe filename: remove non-alphanumeric except dots/dashes
-        const safeName = file.name.replace(/[^a-zA-Z0-9.-]/g, '_');
-        const fileName = `about-${Date.now()}-${safeName}`;
-        const filePath = path.join(process.cwd(), 'public', 'images', 'uploads', fileName);
-
         try {
-            const arrayBuffer = await file.arrayBuffer();
-            const buffer = Buffer.from(arrayBuffer);
-            await fs.writeFile(filePath, buffer);
-            imageUrl = `/images/uploads/${fileName}`;
+            const uploadedUrl = await uploadToCloudinary(file);
+            if (uploadedUrl) {
+                imageUrl = uploadedUrl;
+            }
         } catch (error) {
-            console.error('Error saving about image:', error);
+            console.error('Error saving about image (Cloudinary):', error);
         }
     }
 
