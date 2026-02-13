@@ -2,7 +2,7 @@
   "users": [
     {
       "id": "admin-1",
-      "name": "Pila Arts Owner",
+      "name": "Pila",
       "email": "admin@pilaarts.com",
       "password": "password",
       "role": "admin",

@@ -11,47 +11,69 @@ export async function login(formData) {
     const email = formData.get('email');
     const password = formData.get('password');
 
-    if (email === 'admin@pilaarts.com' && password === 'admin123') {
-        cookies().set('pila_session', 'admin-token', {
+    const user = getUser(email);
+
+    if (user && user.role === 'admin' && user.password === password) {
+        const cookieStore = cookies();
+        // Clear any existing customer session
+        cookieStore.delete('pila_customer_session');
+
+        cookieStore.set('pila_session', 'admin-token', {
             httpOnly: true,
             secure: process.env.NODE_ENV === 'production',
-            path: '/'
+            path: '/',
+            maxAge: 60 * 60 * 24 * 7 // 1 week
         });
+
+        revalidatePath('/');
+        revalidatePath('/admin/dashboard');
+        redirect('/admin/dashboard');
     } else {
         redirect('/admin/login?error=true');
     }
-    revalidatePath('/');
-    redirect('/admin/dashboard');
 }
 
 export async function logout() {
     const cookieStore = cookies();
 
-    // Explicitly clear both session cookies with common options
+    // Clear all possible cookies
     cookieStore.set('pila_session', '', { path: '/', expires: new Date(0), maxAge: 0 });
     cookieStore.set('pila_customer_session', '', { path: '/', expires: new Date(0), maxAge: 0 });
-
-    // Also use the delete method for good measure
     cookieStore.delete('pila_session');
     cookieStore.delete('pila_customer_session');
 
+    // Force revalidate
     revalidatePath('/');
+    revalidatePath('/gallery');
+    revalidatePath('/admin/dashboard');
+    revalidatePath('/about');
+
     redirect('/');
 }
 
 export async function createProduct(formData) {
     const title = formData.get('title');
-    const price = parseInt(formData.get('price'));
+    const priceStr = formData.get('price');
+    const price = parseInt(priceStr);
     const description = formData.get('description');
     const category = formData.get('category');
     const file = formData.get('image');
 
-    if (!file || file.size === 0) {
-        throw new Error('No file uploaded');
+    if (!file || typeof file === 'string' || file.size === 0) {
+        console.error('No valid file uploaded for product');
+        // Instead of throwing, we can return an error or redirect with error
+        redirect('/admin/dashboard?error=NoFile');
     }
 
-    const fileName = `${Date.now()}-${file.name.replace(/\s+/g, '-')}`;
-    const filePath = path.join(process.cwd(), 'public', 'images', 'uploads', fileName);
+    // Ensure uploads directory exists
+    const uploadsDir = path.join(process.cwd(), 'public', 'images', 'uploads');
+    try {
+        await fs.mkdir(uploadsDir, { recursive: true });
+    } catch (e) { }
+
+    const safeName = file.name.replace(/[^a-zA-Z0-9.-]/g, '_');
+    const fileName = `${Date.now()}-${safeName}`;
+    const filePath = path.join(uploadsDir, fileName);
 
     try {
         const arrayBuffer = await file.arrayBuffer();
@@ -62,19 +84,20 @@ export async function createProduct(formData) {
 
         addProduct({
             title,
-            price,
+            price: isNaN(price) ? 0 : price,
             description,
             imageUrl,
             category
         });
     } catch (error) {
-        console.error('Error saving file:', error);
-        throw new Error('Failed to save image');
+        console.error('Error saving product file:', error);
+        redirect('/admin/dashboard?error=UploadFailed');
     }
 
     revalidatePath('/');
+    revalidatePath('/gallery');
     revalidatePath('/admin/dashboard');
-    redirect('/admin/dashboard');
+    redirect('/admin/dashboard?success=true');
 }
 
 export async function deleteProductAction(formData) {
@@ -129,8 +152,13 @@ export async function customerSignup(formData) {
     const password = formData.get('password');
 
     addUser({ name, email, password, role: 'customer' });
-    cookies().set('pila_customer_session', email, { httpOnly: true, path: '/' });
+
+    const cookieStore = cookies();
+    cookieStore.delete('pila_session'); // Clear admin session
+    cookieStore.set('pila_customer_session', email, { httpOnly: true, path: '/' });
+
     revalidatePath('/');
+    revalidatePath('/gallery');
     redirect('/');
 }
 
@@ -141,10 +169,14 @@ export async function customerLogin(formData) {
     const user = getUser(email);
 
     if (user && user.password === password) {
-        cookies().set('pila_customer_session', email, { httpOnly: true, path: '/' });
+        const cookieStore = cookies();
+        cookieStore.delete('pila_session'); // Clear admin session
+        cookieStore.set('pila_customer_session', email, { httpOnly: true, path: '/' });
+
+        revalidatePath('/');
+        revalidatePath('/gallery');
+        redirect('/');
     } else {
         redirect('/login?error=InvalidCredentials');
     }
-    revalidatePath('/');
-    redirect('/');
 }

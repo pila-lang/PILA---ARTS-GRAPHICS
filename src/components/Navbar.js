@@ -13,10 +13,10 @@ export default function Navbar() {
     const isLoggedIn = customerSession || adminSession;
 
     let user = null;
-    if (customerSession) {
-        user = getUser(customerSession.value);
-    } else if (adminSession) {
+    if (adminSession) {
         user = getUser('admin@pilaarts.com');
+    } else if (customerSession) {
+        user = getUser(customerSession.value);
     }
 
     const displayName = user ? user.name.split(' ')[0] : (adminSession ? 'Admin' : '');
