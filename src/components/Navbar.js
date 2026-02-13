@@ -2,6 +2,7 @@ import Link from 'next/link';
 import { User, LogOut } from 'lucide-react';
 import { cookies } from 'next/headers';
 import { logout } from '../lib/actions';
+import { getUser } from '../lib/data';
 import CartIcon from './CartIcon';
 
 export default function Navbar() {
@@ -10,7 +11,16 @@ export default function Navbar() {
     const adminSession = cookieStore.get('pila_session');
 
     const isLoggedIn = customerSession || adminSession;
-    const displayName = customerSession ? customerSession.value.split('@')[0] : (adminSession ? 'Admin' : '');
+
+    let user = null;
+    if (customerSession) {
+        user = getUser(customerSession.value);
+    } else if (adminSession) {
+        user = getUser('admin@pilaarts.com');
+    }
+
+    const displayName = user ? user.name.split(' ')[0] : (adminSession ? 'Admin' : '');
+    const profilePic = user ? user.profilePic : null;
 
     return (
         <nav className="container">
@@ -32,9 +42,18 @@ export default function Navbar() {
 
                 {isLoggedIn ? (
                     <div style={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
-                        <span style={{ fontSize: '0.9rem', color: 'var(--primary)', fontWeight: '600' }}>
-                            Hi, {displayName}
-                        </span>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                            {profilePic ? (
+                                <img src={profilePic} alt={displayName} style={{ width: '32px', height: '32px', borderRadius: '50%', objectFit: 'cover', border: '2px solid var(--primary)' }} />
+                            ) : (
+                                <div style={{ width: '30px', height: '30px', borderRadius: '50%', background: 'var(--primary)', color: 'black', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.8rem', fontWeight: 'bold' }}>
+                                    {displayName[0]}
+                                </div>
+                            )}
+                            <span style={{ fontSize: '0.9rem', color: 'var(--primary)', fontWeight: '600' }}>
+                                Hi, {displayName}
+                            </span>
+                        </div>
                         <form action={logout}>
                             <button type="submit" style={{ background: 'none', border: 'none', color: 'white', cursor: 'pointer', display: 'flex', alignItems: 'center' }} title="Logout">
                                 <LogOut size={22} />

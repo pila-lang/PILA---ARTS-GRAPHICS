@@ -5,7 +5,8 @@
       "name": "Pila Arts Owner",
       "email": "admin@pilaarts.com",
       "password": "password",
-      "role": "admin"
+      "role": "admin",
+      "profilePic": "/images/uploads/about-1770921217591-image_7.png"
     },
     {
       "name": "Asiri",

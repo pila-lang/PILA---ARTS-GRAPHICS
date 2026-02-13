@@ -83,3 +83,14 @@ export function updateAbout(aboutData) {
   writeDb(db);
   return db.about;
 }
+
+export function updateUser(email, userData) {
+  const db = readDb();
+  const index = db.users.findIndex(u => u.email === email);
+  if (index !== -1) {
+    db.users[index] = { ...db.users[index], ...userData };
+    writeDb(db);
+    return db.users[index];
+  }
+  return null;
+}

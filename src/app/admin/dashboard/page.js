@@ -70,7 +70,7 @@ export default async function AdminDashboard() {
                                 <textarea name="bio" rows="5" required defaultValue={about.bio}></textarea>
                             </div>
                             <div style={{ marginBottom: '20px' }}>
-                                <label>Portrait Image</label>
+                                <label>Portrait Image (Profile Pic)</label>
                                 {about.imageUrl && (
                                     <div style={{ marginBottom: '10px' }}>
                                         <img src={about.imageUrl} alt="Current Profile" style={{ width: '60px', height: '60px', borderRadius: '50%', objectFit: 'cover' }} />

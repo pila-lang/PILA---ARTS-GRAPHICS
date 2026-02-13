@@ -4,7 +4,7 @@ import { cookies } from 'next/headers';
 import { redirect } from 'next/navigation';
 import { revalidatePath } from 'next/cache';
 import path from 'path';
-import { addUser, getUser, addProduct, getProducts, deleteProduct, updateAbout } from './data';
+import { addUser, getUser, addProduct, getProducts, deleteProduct, updateAbout, updateUser } from './data';
 import fs from 'fs/promises';
 
 export async function login(formData) {
@@ -99,9 +99,17 @@ export async function updateAboutAction(formData) {
         }
     }
 
+    // Update the about section
     updateAbout({ bio, imageUrl });
+
+    // Also update the admin user's profile pic if we are updating "About Me"
+    // Since this is the admin dashboard, we assume the admin is performing this action.
+    const adminEmail = 'admin@pilaarts.com';
+    updateUser(adminEmail, { profilePic: imageUrl });
+
     revalidatePath('/about');
     revalidatePath('/admin/dashboard');
+    revalidatePath('/'); // Revalidate root for Navbar updates
     redirect('/admin/dashboard');
 }
 
