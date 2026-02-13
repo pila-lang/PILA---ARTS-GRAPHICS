@@ -25,10 +25,15 @@ export async function login(formData) {
 }
 
 export async function logout() {
-    cookies().set('pila_session', '', { path: '/', expires: new Date(0) });
-    cookies().set('pila_customer_session', '', { path: '/', expires: new Date(0) });
-    cookies().delete('pila_session');
-    cookies().delete('pila_customer_session');
+    const cookieStore = cookies();
+
+    // Explicitly clear both session cookies with common options
+    cookieStore.set('pila_session', '', { path: '/', expires: new Date(0), maxAge: 0 });
+    cookieStore.set('pila_customer_session', '', { path: '/', expires: new Date(0), maxAge: 0 });
+
+    // Also use the delete method for good measure
+    cookieStore.delete('pila_session');
+    cookieStore.delete('pila_customer_session');
 
     revalidatePath('/');
     redirect('/');
@@ -85,8 +90,11 @@ export async function updateAboutAction(formData) {
     const file = formData.get('image');
     let imageUrl = formData.get('currentImageUrl');
 
-    if (file && file.size > 0) {
-        const fileName = `about-${Date.now()}-${file.name.replace(/\s+/g, '-')}`;
+    // Check if a new file was actually uploaded
+    if (file && typeof file !== 'string' && file.size > 0) {
+        // Safe filename: remove non-alphanumeric except dots/dashes
+        const safeName = file.name.replace(/[^a-zA-Z0-9.-]/g, '_');
+        const fileName = `about-${Date.now()}-${safeName}`;
         const filePath = path.join(process.cwd(), 'public', 'images', 'uploads', fileName);
 
         try {
@@ -102,15 +110,17 @@ export async function updateAboutAction(formData) {
     // Update the about section
     updateAbout({ bio, imageUrl });
 
-    // Also update the admin user's profile pic if we are updating "About Me"
-    // Since this is the admin dashboard, we assume the admin is performing this action.
+    // Sync admin profile picture
     const adminEmail = 'admin@pilaarts.com';
     updateUser(adminEmail, { profilePic: imageUrl });
 
+    // Revalidate and redirect
+    revalidatePath('/');
     revalidatePath('/about');
     revalidatePath('/admin/dashboard');
-    revalidatePath('/'); // Revalidate root for Navbar updates
-    redirect('/admin/dashboard');
+
+    // Force a redirect to ensure state is refreshed
+    redirect('/admin/dashboard?updated=true');
 }
 
 export async function customerSignup(formData) {
