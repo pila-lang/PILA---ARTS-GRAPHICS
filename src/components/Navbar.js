@@ -55,8 +55,9 @@ export default function Navbar() {
                             </span>
                         </div>
                         <form action={logout}>
-                            <button type="submit" style={{ background: 'rgba(255,255,255,0.1)', border: 'none', color: 'white', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '8px', borderRadius: '50%', transition: 'background 0.3s' }} title="Logout" className="logout-btn">
-                                <LogOut size={20} />
+                            <button type="submit" style={{ background: 'rgba(255,255,255,0.1)', border: 'none', color: 'white', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '8px', padding: '8px 15px', borderRadius: '20px', transition: 'background 0.3s' }} title="Logout" className="logout-btn">
+                                <LogOut size={18} />
+                                <span style={{ fontSize: '0.8rem' }}>Logout</span>
                             </button>
                         </form>
                     </div>

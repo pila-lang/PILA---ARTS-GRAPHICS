@@ -45,7 +45,6 @@ export async function login(formData) {
             httpOnly: true,
             secure: process.env.NODE_ENV === 'production',
             path: '/',
-            maxAge: 60 * 60 * 24 * 7 // 1 week
         });
 
         revalidatePath('/');
@@ -60,10 +59,13 @@ export async function logout() {
     const cookieStore = cookies();
 
     // Clear all possible cookies
-    cookieStore.set('pila_session', '', { path: '/', expires: new Date(0), maxAge: 0 });
-    cookieStore.set('pila_customer_session', '', { path: '/', expires: new Date(0), maxAge: 0 });
+    // Aggressive cookie clearing
     cookieStore.delete('pila_session');
     cookieStore.delete('pila_customer_session');
+
+    // Fallback for some environments
+    cookieStore.set('pila_session', '', { path: '/', expires: new Date(0) });
+    cookieStore.set('pila_customer_session', '', { path: '/', expires: new Date(0) });
 
     // Force revalidate
     revalidatePath('/');

@@ -9,7 +9,7 @@ export default function AdminLogin() {
                 <form action={login}>
                     <div style={{ marginBottom: '15px' }}>
                         <label style={{ display: 'block', marginBottom: '5px' }}>Email</label>
-                        <input type="email" name="email" defaultValue="admin@pilaarts.com" required />
+                        <input type="email" name="email" placeholder="admin@pilaarts.com" required />
                     </div>
                     <div style={{ marginBottom: '20px' }}>
                         <label style={{ display: 'block', marginBottom: '5px' }}>Password</label>
